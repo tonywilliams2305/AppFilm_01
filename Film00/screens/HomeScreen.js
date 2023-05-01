@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
 import React from 'react'
-import { Header } from 'react-native/Libraries/NewAppScreen'
+import Header from '../components/Header'
 
 const HomeScreen = () => {
   return (
-    <SafeAreaView>
-      <Text>HomeScreen</Text>
+    <SafeAreaView style={{backgroundColor:"gray", flex:1}}>
       <Header/>
     </SafeAreaView>
   )
