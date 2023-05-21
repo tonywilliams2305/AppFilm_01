@@ -1,9 +1,11 @@
 import { View, Text, FlatList, Pressable, Image } from 'react-native'
 import movies from '../data/movies'
 import Header from './Header';
+import { useNavigation } from '@react-navigation/native';
 
 const MovieCards = () => {
     const data = movies;
+    const navigation = useNavigation();
     return (
         <View>
             <FlatList showsVerticalScrollIndicator={false} numColumns={2} ListHeaderComponent={Header} data={data} renderItem={({ item }) => (
@@ -16,7 +18,12 @@ const MovieCards = () => {
 
                     <Text style={{ fontSize: 15 }}>{item.genre}</Text>
 
-                    <Pressable style={{ backgroundColor: "yellow", padding: 10, borderRadius: 6, width: 100, marginRight: 10, marginTop: 10 }}>
+                    <Pressable 
+                     onPress={() => navigation.navigate("Phim",{
+                        name: item.name,
+                        image: item.image
+                     })} 
+                     style={{ backgroundColor: "yellow", padding: 10, borderRadius: 6, width: 100, marginRight: 10, marginTop: 10 }}>
                         <Text style={{ fontSize: 14, fontWeight: 500, textAlign: "center" }}>BOOK</Text>
                     </Pressable>
                 </Pressable>
