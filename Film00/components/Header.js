@@ -35,35 +35,27 @@ const Header = () => {
           uri: 'https://cdn.tgdd.vn/Files/2019/05/04/1164811/collage_fotor_1280x719-800-resize.jpg',
         }}
       >
-        <Pressable style={{ position: "absolute", height: 130, backgroundColor: "white", padding: 10, borderRadius: 6, top: 140, left: 30 ,width: "85%" }}>
-          <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Releasing in 1 days</Text>
+        <Pressable style={{ position: "absolute", height: 130, backgroundColor: "white", padding: 10, borderRadius: 6, top: 140, left: 20 ,width: "75%" }}>
+          <Text style={{ fontSize: 14, fontWeight: "500", color: "gray" }}>Sắp ra mắt</Text>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" ,marginTop: 10}}>
 
             <View>
-              <Text style={{ fontSize: 16, fontWeight: "bold" }}>Title</Text>
-              <Text style={{ fontSize: 16, fontWeight: "400", color: "gray", marginTop: 4 }}>Description</Text>
+              <Text style={{ fontSize: 16, fontWeight: "bold" }}>Spider-Man: Homecoming</Text>
+              <Text style={{ fontSize: 16, fontWeight: "400", color: "gray", marginTop: 4 }}>Là phim siêu anh hùng</Text>
             </View>
 
-            <Pressable style={{backgroundColor:"yellow",padding:10,borderRadius:6}}>
-              <Text style={{fontSize: 14, fontWeight:500,textAlign:"center"}}>BOOK</Text>
-            </Pressable>
+            
           </View>
-          <Text style={{marginTop:8, fontSize: 15}}>Type of film</Text>
+          <Text style={{marginTop:8, fontSize: 15}}>Ảo tưởng, kinh dị</Text>
         </Pressable>
       </ImageBackground>
       
       <View style={{marginTop: 100}}/>
-      <ScrollView showsHorizontalScrollIndicator="false" horizontal="true">
-        {types.map((item, index) => (
-          <View style={{margin: 10, borderColor:"C0C0C0", borderWidth: 1, borderRadius: 4, padding: 10}} key={index}>
-            <Text style={{fontWeight:500, textAlign: 'center'}}>{item.name}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      
     </View>
   )
 }
 
 export default Header
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
