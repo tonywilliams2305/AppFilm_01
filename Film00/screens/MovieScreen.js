@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Pressable, FlatList } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Pressable, FlatList, Layout} from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons';
@@ -6,32 +6,28 @@ import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import HorizontalDatepicker from '@awrminkhodaei/react-native-horizontal-datepicker';
 import malls from '../data/malls';
-
+import SafeViewAndroid from '../components/SafeViewAndroid';
 
 
 
 const MovieScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedDate, setSelectedDate] = useState([]);
     const mallsData = malls;
     const [mall, setMall] = useState([]);
     const [seatsData, setSeatsData] = useState([]);
-
+    
 
     return (
-        <SafeAreaView>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+            <View style={{ flexDirection: "row", alignItems: "center"}}>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Ionicons onPress={() => navigation.goBack()} name="arrow-back" size={24} color="black" />
                     <Text style={{ marginLeft: 5, fontSize: 18, fontWeight: 600 }}>{route.params.name}</Text>
                 </View>
 
-                <View style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
-                    <Feather name="search" size={24} color="black" />
-                    <AntDesign style={{ marginHorizontal: 10 }} name="filter" size={24} color="black" />
-                    <AntDesign name="sharealt" size={24} color="black" />
-                </View>
+                
             </View>
 
 
@@ -55,7 +51,7 @@ const MovieScreen = () => {
                 <Pressable onPress={() => {
                     setMall(item.name);
                     setSeatsData(item.tableData);
-                }} style={{ margin: 10 }} key={index}>
+                }} style={{ margin: 5 }} key={index}>
                     <Text style={{ fontSize: 16, fontWeight: "500" }}>{item.name}</Text>
                     {mall.includes(item.name) ? (
                         <FlatList
