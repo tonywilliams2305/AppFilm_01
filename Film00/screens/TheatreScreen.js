@@ -1,47 +1,101 @@
-import { View, Text, SafeAreaView, FlatList, Pressable } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, Pressable, Alert } from 'react-native'
 import React, { useContext } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import {MoviesCards} from '../Context'
+import { MoviesCards } from '../Context'
+import { useStripe } from '@stripe/stripe-react-native';
+import SafeViewAndroid from '../components/SafeViewAndroid';
 
 const TheatreScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {seats, setSeats, occupied} = useContext(MoviesCards);
+  const { seats, setSeats, occupied } = useContext(MoviesCards);
   const onSeatSelect = (item) => {
     const seatSeleted = seats.find((seat) => seat === item);
     if (seatSeleted) {
       setSeats(seats.filter((seat) => seat !== item))
-    }else {
+    } else {
       setSeats([...seats, item])
     }
   }
 
   const showSeats = () => {
     return (
-      <View style={{flexDirection:"row", alignItems:"center"}}>
-        {
-          seats.map((seat, index) => (
-      
-            <Text style={{paddingHorizontal: 2}}>{seat}</Text>
-         
-          
-        ))
-        }
+
+      <View >
+        <Text>
+          Chỗ ngồi đã chọn
+        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {
+
+            seats.map((seat, index) => (
+
+              <Text style={{ paddingHorizontal: 2 }}>{seat}</Text>
+
+
+            ))
+          }
+        </View>
+
       </View>
-      
+
     )
-    
+
+  }
+  const displaySeats = [...seats]
+  const fee = 500;
+
+  const noOfSeats = seats.length;
+  const priceValue = noOfSeats * 500;
+  const total = seats.length > 0 ? (fee + noOfSeats * 500) : 0;
+  const stripe = useStripe()
+  const subscribe = async () => {
+    const response = await fetch("http://192.168.1.3:8000/payment", {
+      method: "POST",
+      body: JSON.stringify({
+        amount: Math.floor(total * 100),
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log(data);
+    if (!response.ok) return Alert.alert(data.message);
+    const clientSecret = data.clientSecret;
+    const initSheet = await stripe.initPaymentSheet({
+      paymentIntentClientSecret: clientSecret,
+      merchantDisplayName: 'hihi'
+    })
+    if (initSheet.error) return Alert.alert(initSheet.error.message)
+    const presentSheet = await stripe.presentPaymentSheet({
+      clientSecret,
+    })
+    if (presentSheet.error) return Alert.alert(presentSheet.error.message);
+
+    else {
+      occupied.push(...seats)
+      navigation.navigate("Ticket", {
+        name: route.params.name,
+        mall: route.params.mall,
+        timeSelected: route.params.timeSelected,
+        total: total,
+        image: route.params.image,
+        date: route.params.date,
+        selectedSeats: displaySeats,
+        priceValue: priceValue,
+      })
+
+      setSeats([])
+    }
   }
 
-  const fee = 87;
-  const noOfSeats = seats.length;
-  const total = seats.length > 0 ? (fee + noOfSeats * 50000) : 0;
-  
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Ionicons onPress={() => navigation.goBack()} name="arrow-back" size={24} color="black" />
@@ -51,31 +105,28 @@ const TheatreScreen = () => {
           </View>
 
         </View>
-        <AntDesign name="sharealt" size={24} color="black" />
       </View>
 
 
       <Text style={{ textAlign: "center", fontSize: 14, fontWeight: "bold", marginTop: 10 }}>{route.params.timeSelected}</Text>
 
-      <Text style={{ textAlign: "center", fontSize: 12, color: "gray", fontWeight: "bold", marginTop: 10 }}>CLASSIC</Text>
       <View style={{ marginTop: 20 }} />
       <FlatList numColumns={7} data={route.params.tableSeats} renderItem={({ item }) => (
         <Pressable onPress={() => onSeatSelect(item)} style={{ borderWidth: 1, margin: 5, borderColor: "black", borderRadius: 5, marginVertical: 10 }}
         >
           {
             seats.includes(item) ? (
-              <Text style={{backgroundColor: "yellow", padding: 10}}>{item}</Text>
-            ) : 
+              <Text style={{ backgroundColor: "yellow", padding: 10 }}>{item}</Text>
+            ) :
               occupied.includes(item) ? (
-                <Text style={{backgroundColor: "#989898", padding: 10}}>{item}</Text>
+                <Text style={{ backgroundColor: "#989898", padding: 10 }}>{item}</Text>
               ) : (
-                <Text style={{ padding: 10}}>{item}</Text>
+                <Text style={{ padding: 10 }}>{item}</Text>
               )
-            
           }
 
 
-          
+
         </Pressable>
       )} />
       <View style={{ borderWidth: 1, padding: 10, marginTop: 10, flexDirection: "row", justifyContent: "space-around" }}>
@@ -95,9 +146,8 @@ const TheatreScreen = () => {
         </View>
       </View>
 
-      <View style={{padding: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+      <View style={{ padding: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <View >
-          <Text style={{fontWeight: "600" }}>show end tome approax 6:51pm</Text>
           {seats.length > 0 ? (
             showSeats()
           ) : (
@@ -106,31 +156,18 @@ const TheatreScreen = () => {
         </View>
 
         <View style={{ padding: 10 }}>
-          <Text style={{backgroundColor:"#e0e0e0",width: 100}}>Now with ticket cancellation</Text>
         </View>
       </View>
 
-      <Pressable onPress={() => {
-        occupied.push(...seats)
-        navigation.navigate("Ticket",{
-          name: route.params.name,
-          mall:route.params.mall,
-          timeSelected:route.params.timeSelected,
-          total: total,
-          image: route.params.image,
-          date:route.params.date
-        }
-        )
-
-
-        setSeats([])
-      }} style={{backgroundColor: "green", padding: 10, justifyContent:"space-between", flexDirection:"row"}}>
+      <Pressable onPress={subscribe} style={{ backgroundColor: "green", padding: 10, justifyContent: "space-between", flexDirection: "row" }}>
         {seats.length > 0 ? (
           <Text>Đã chọn {seats.length} chỗ ngồi</Text>
         ) : (
           <Text></Text>
         )}
-        <Text style={{fontSize: 18}}>Thanh toán {total} VNĐ</Text>
+
+        <Text style={{ fontSize: 18 }}>Thanh toán {total * 10 * 10} VNĐ</Text>
+
 
       </Pressable>
     </SafeAreaView>
